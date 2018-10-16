@@ -10,123 +10,141 @@
 </head>
 
 <body>
-    <button data-animal="bird">bird</button>
-    <button data-animal="dog">dog</button>
-    <button data-animal="cat">cat</button>
-    <button data-animal="mouse">mouse</button>
+
+    <h1>GifTastic</h1>
+
+    <div id="buttons-view">
+        <button class="giph-btn" data-animal="bird">bird</button>
+        <button class="giph-btn" data-animal="dog">dog</button>
+        <button class="giph-btn" data-animal="cat">cat</button>
+        <button class="giph-btn" data-animal="mouse">mouse</button>
+    </div>
 
     <div class="row bg-white">
         <div class="col-12 bg-secondary">
             <div class="col">
                 <br><br><br>
                 <form id="animal-form">
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-default">Add an animal!:</span>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Add an animal!:</span>
+                        </div>
+                        <input type="text" id="search-term" class="form-control" aria-label="Sizing example input"
+                            aria-describedby="inputGroup-sizing-default">
                     </div>
-                    <input type="text" id="search-term" class="form-control" aria-label="Sizing example input"
-                        aria-describedby="inputGroup-sizing-default">
-                </div>
-                <button id="submit" type="button" class="btn btn-primary">Submit</button>  </form>
+                    <button id="submit" type="button" class="btn btn-primary">Submit</button>
 
-                </div>
-                
-
-    <div id="gifs-appear-here">
-     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script type="text/javascript">
-        // Adding click event listen listener to all buttons
-         $("button").on("click", function () {
-         // Grabbing and storing the data-animal property value from the button
-         var animal = ["dog", "cat", "bird", "mouse"]
-         var animal = $(this).attr("data-animal");
-
-        // Constructing a queryURL using animal
-
-          var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-        animal + "&api_key=dc6zaTOxFJmzC&limit=10";
-
-             $.ajax({
-              url: queryURL,
-              method: "GET"
-                     })
-            // After data comes back from the request
-            .then(function (response) {
-
-              // storing the data from the AJAX request in the results variable
-                    var results = response.data;
-
-                 // Looping through each result item
-                    for (var i = 0; i < results.length; i++) {
-
-                     // Only taking action if rating is appropriate
-                     if (results[i].rating !== "r" && results[i].rating !== "pg13") {
+                    <!-- added classes am -->
+                    <!-- <div class="gif"></div>
+                    <div class="state"></div> -->
 
 
-                     // Creating and storing a div tag
-                     var animalDiv = $("<div>");
+                </form>
+            </div>
+            
 
-                     var rating = results[i].rating;
+
+            <div id="gifs-appear-here">
+            </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <script type="text/javascript">
+                var buttonArr = ["dog", "cat", "bird", "mouse"];
+
+                // Adding click event listen listener to all buttons
+                $(document).on("click", ".giph-btn", function () {
+                    // Grabbing and storing the data-animal property value from the button
+                    var animal = $(this).attr("data-animal");
+                   
+                    // Constructing a queryURL using animal
+                    var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+                        animal + "&api_key=dc6zaTOxFJmzC&limit=10";
+                    console.log(queryURL)
+                    $.ajax({
+                            url: queryURL,
+                            method: "GET"
+                        })
+                        // After data comes back from the request
+                        .then(function (response) {
+                            // storing the data from the AJAX request in the results variable
+                            var results = response.data;
+                            console.log(results);
+                            // Looping through each result item
+                            for (var i = 0; i < results.length; i++) {
+                                // Only taking action if rating is appropriate
+                                if (results[i].rating !== "r" && results[i].rating !== "pg13") {
+                                    // Creating and storing a div tag
+                                    var animalDiv = $("<div>");
+                                    var rating = results[i].rating;
+                                    // Creating a paragraph tag with the result item's rating
+                                    var p = $("<p>").text("Rating: " + results[i].rating);
+                                    // Creating and storing an image tag
+                                    var animalImage = $("<img>");
+                                    // Setting the src attribute of the image to a property pulled off the result item
+
+                                   
+                                    animalImage.attr("src", results[i].images.fixed_height.url);
+                                    animalImage.attr("data-still", results[i].images.fixed_height.url);
+                                    animalImage.attr("data-animate", results[i].images.fixed_height.url);
 
 
-                    // Creating a paragraph tag with the result item's rating
-                      var p = $("<p>").text("Rating: " + results[i].rating);
+                                    
+                                    animalImage.addClass("gif");
+                                    // Appending the paragraph and image tag to the animalDiv
+                                    animalDiv.append(p);
+                                    animalDiv.append(animalImage);
+                                    // Prependng the animalDiv to the HTML page in the "#gifs-appear-here" div
+                                    $("#gifs-appear-here").prepend(animalDiv);
+                                    // reset
 
-                     // Creating and storing an image tag
-                      var animalImage = $("<img>");
-                    // Setting the src attribute of the image to a property pulled off the result item
-                        animalImage.attr("src", results[i].images.fixed_height.url);
+                                }
+                            }
+                        });
+                });
 
-                    // Appending the paragraph and image tag to the animalDiv
-                        animalDiv.append(p);
-                        animalDiv.append(animalImage);
-
-                    // Prependng the animalDiv to the HTML page in the "#gifs-appear-here" div
-                        $("#gifs-appear-here").prepend(animalDiv);
-                    // reset
-                                                
-               }
-         }       
-                    $(".gif").on("click", function() {
-                    var animal             
+                $(".gif").on("click", function () {
+                    var still = ("data-still");
+                    var animate = ("data-animate");
                     var state = $(this).attr("data-state");
-                        
-                         if (state == "still") {
-                          $(this).attr("src", $(this).attr("data-still"));
-                            $(this).attr("data-state", "data-still");
-                             } else {
-                             $(this).attr("src", $(this).attr("data-animate"));
-                                 $(this).attr("data-state", "animate");
-      }
-    });
-                    function renderButtons() {
-                     $("#buttons-view").empty();
-                    for (var i = 0; i < results.length; i++) {
-                     var a = $("#<button>");
-                     a.attr("data-name", animal[i]);
-                     a.img(animal[i]);
-                     $("#buttons-view").append(a);
-                   }
-                  }
-                                                
-                $("#add-animals").on("click", function (event) {
-                    event.preventDefault();
-                    var animals = $("#animal-input").val().trim();
-                    animals.push(animals);
-                    renderButtons();
-                                                                            
-                $(document).on("click", ".animal", 
-                    displayAnimalImage);
-                     renderButtons();
-         });
+                    console.log("clicked");
+                    if (state == "still") {
+                        $(this).attr("src", $(this).attr("data-still"));
+                        $(this).attr("data-state", "data-still");
+                    } else {
+                        $(this).attr("src", $(this).attr("data-animate"));
+                        $(this).attr("data-state", "animate");
+                    }
+                });
 
-                function resetImage() {
-                   var animal = $(this).attr("data-animal");}
-                                            
-        });
-     });
-        </script>
+                //Render buttons function
+                function renderButtons() {
+                    $("#buttons-view").empty();
+                    for (var i = 0; i < buttonArr.length; i++) {
+                        var a = $("<button>");
+                        a.attr("data-animal", buttonArr[i]);
+                        a.addClass("giph-btn");
+                        a.text(buttonArr[i]);
+                        $("#buttons-view").append(a);
+                    }
+                }
+
+                //on submit to create more buttons
+                $("#submit").on("click", function (event) {
+                    event.preventDefault();
+                    
+                    console.log("clicked");
+                    var searchTerm = $("#search-term").val().trim();
+                    console.log(searchTerm);
+                    buttonArr.push(searchTerm);
+                    console.log("button array" + buttonArr);
+                    renderButtons();
+
+                });
+
+
+
+
+                
+            </script>
 </body>
 
 </html>
